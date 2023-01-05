@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "dec_to_bin"
+name = "d2b"
 version = "0.1.0"

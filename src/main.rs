@@ -1,38 +1,51 @@
-fn main() {}
+use std::{env::args, io, io::prelude::*};
 
-#[allow(dead_code)]
-fn dec_to_bin(n: u32) -> u128 {
-    let mut acc = 0u64;
-    let mut powers: Vec<u64> = vec![];
+fn main() {
+      let Some(arg) = args().nth(1) else { return };
+      let arg: u64 = arg.as_str().parse().expect(
+            format!(
+                  "The provided argument must be a positive integer between 0 - {}",
+                  u64::MAX
+            )
+            .as_str(),
+      );
 
-    let pow2 = |p: u32| -> u64 { 2u64.pow(p) };
-    let log2 = |n: u32| -> u64 { f64::log2(f64::from(n)).trunc() as u64 };
+      writeln!(io::stdout(), "{}", d2b(arg)).expect("Failed to write to stdout!");
+}
 
-    while acc.lt(&(n as u64)) {
-        let power = log2(n - acc as u32);
-        acc += pow2(power as u32);
-        powers.push(power);
-    }
+fn d2b(n: u64) -> String {
+      if n == 0 {
+            return "0".to_string();
+      }
+      let mut n = n;
+      let mut bin = String::new();
+      while n > 0 {
+            bin.push_str(&(n % 2).to_string()[..]);
+            n /= 2;
+      }
 
-    return powers.iter().fold(0u128, |mut acc, curr| {
-                            acc += 10u128.pow(*curr as u32);
-                            acc
-                        });
+      bin.chars().rev().collect::<String>()
 }
 
 #[cfg(test)]
-#[allow(dead_code)]
 mod tests {
 
-    use super::dec_to_bin as dtb;
+      #[test]
+      fn td2b() {
+            let test_group: [u64; 8] = [0, 1, 2, 5, 6, 999, 234, 658];
+            let expected_results: [&'static str; 8] = [
+                  "0",
+                  "1",
+                  "10",
+                  "101",
+                  "110",
+                  "1111100111",
+                  "11101010",
+                  "1010010010",
+            ];
 
-    #[test]
-    fn dec_to_bin() {
-        let test_group: [u32; 8] = [0, 1, 2, 5, 6, 999, 234, 658];
-        let expected_results: [u128; 8] = [0, 1, 10, 101, 110, 1111100111, 11101010, 1010010010];
-
-        for (i, _) in test_group.iter().enumerate() {
-            assert_eq!(dtb(test_group[i]), expected_results[i]);
-        }
-    }
+            for (i, _) in test_group.iter().enumerate() {
+                  assert_eq!(super::d2b(test_group[i]), expected_results[i]);
+            }
+      }
 }
